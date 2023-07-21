@@ -41,25 +41,9 @@ jobs:
       - name: Setup kernelsu
         run: |
           cd $GITHUB_WORKSPACE/android-kernel
-          echo "[+] KernelSU setup"
-          GKI_ROOT=$(pwd)
-          echo "[+] GKI_ROOT: $GKI_ROOT"
-          echo "[+] Copy KernelSU driver to $GKI_ROOT/common/drivers"
-          ln -sf $GITHUB_WORKSPACE/KernelSU/kernel $GKI_ROOT/common/drivers/kernelsu
-          echo "[+] Add KernelSU driver to Makefile"
-          DRIVER_MAKEFILE=$GKI_ROOT/common/drivers/Makefile
-          grep -q "kernelsu" $DRIVER_MAKEFILE || echo "obj-y += kernelsu/" >> $DRIVER_MAKEFILE
-          echo "[+] Apply KernelSU patches"
-          cd $GKI_ROOT/common/ && git apply $GITHUB_WORKSPACE/KernelSU/.github/patches/$PATCH_PATH/*.patch
-          echo "[+] Patch script/setlocalversion"
-          sed -i 's/-dirty//g' $GKI_ROOT/common/scripts/setlocalversion
-
-          if [ "$IS_DEBUG_KERNEL" = "true" ]; then
-            echo "[+] Enable debug features for kernel"
-            echo "ccflags-y += -DCONFIG_KSU_DEBUG" >> $GITHUB_WORKSPACE/KernelSU/kernel/Makefile
-          fi
-          echo "[+] KernelSU setup done."
-          
+          echo "KernelSU setup"
+           curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
+           
       - name: Build kernel
         run: |
           echo "开始构建内核" 
