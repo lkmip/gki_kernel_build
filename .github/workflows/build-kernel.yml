@@ -18,9 +18,9 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y ccache lzop cpio bzip2 zip flex bison gperf
           
-      - name: Pull toolchain and kernel
+      - name: Setup toolchain
         run: |
-          echo "开始链接工具"
+          echo "开始拉取编译器"
           cd manifests
           paths=$(pwd)"/manifest_prebuilts.xml"
           cd ..
@@ -30,16 +30,19 @@ jobs:
           cp $paths .repo/manifests/
           ./repo init -m manifest_prebuilts.xml
           ./repo sync -c -j$(($(getconf _NPROCESSORS_ONLN) * 2))
-          echo "检查工具完整性"
+          echo "检查完整性"
           ./repo sync && ls
-          echo "开始链接内核"
+          
+      - name: Setup kernel source
+        run: |
+          echo "开始拉取内核源码"
           git clone --depth=1 ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_SOURCE_BRANCH }} common
       
       - name: Setup kernelsu
         run: |
           echo ＂合并KernelSU＂
           cd android-kernel
-          curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash - main
+          curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
           
       - name: Build kernel
         run: |
