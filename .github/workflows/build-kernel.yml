@@ -34,7 +34,12 @@ jobs:
           ./repo sync && ls
           echo "开始链接内核"
           git clone --depth=1 ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_SOURCE_BRANCH }} common
-          
+      
+      - name: Setup kernelsu
+        run: |
+          echo ＂合并KernelSU＂
+          cd android-kernel
+          curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash - main
           
       - name: Build kernel
         run: |
